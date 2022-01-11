@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Container, useMediaQuery, useTheme } from '@material-ui/core';
+import { AppBar, Container, useMediaQuery, useTheme, Typography } from '@material-ui/core';
 import { colors } from '../../assets/colors/index';
-// import Logo from '../../assets/images/dimwits-logo.png';
-// import LogoDark from './assets/logo-dark.png';
 import { FiMenu, FiX } from 'react-icons/fi';
-// import SocialSection from '../../components/SocialSection';
 
 
 const NavBar = () => {
@@ -18,6 +15,7 @@ const NavBar = () => {
         <AppBar position="fixed" className={classes.appBar}>
             <Container className={classes.container}>
                 <div className={classes.navigationBar}>
+                    <Typography className={classes.fireChatHeader}>{'Firechat 🔥'}</Typography>
                     {isMobile && (
                         open ? 
                         (<FiX size={32} className={classes.menuToggle} onClick={()=>setOpen(false)} />)
@@ -77,7 +75,7 @@ const useStyles = makeStyles(theme => ({
     },
     navigationBar: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'start',
         width: '100%',
         alignItems: 'center',
         height: '100%',
@@ -86,18 +84,11 @@ const useStyles = makeStyles(theme => ({
             justifyContent: 'center',
         }
     },
-    linkSection :{
-        display: 'flex',
-        alignItems: 'center',
-        [theme.breakpoints.down('sm')]:{
-            display: 'none'
-        }
-    },
-    linkSectionMobile: {
-        display: 'flex',
-        flexDirection: 'column',
-        paddingTop: 116,
-        width: '100%',
+    fireChatHeader: {
+        color: colors.white,
+        fontSize: 18,
+        fontWeight: 600,
+        textTransform: 'uppercase'
     },
     menuItem: {
         textTransform: 'uppercase',

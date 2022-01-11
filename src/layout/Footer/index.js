@@ -1,7 +1,6 @@
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { Container, useMediaQuery, useTheme } from '@material-ui/core';
-// import Logo from '../../assets/images/dimwits-logo.png';
 import { colors } from '../../assets/colors/index';
 const pack = require('../../../package.json');
 

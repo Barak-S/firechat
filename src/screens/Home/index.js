@@ -1,9 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useMediaQuery, useTheme, Button } from '@material-ui/core';
 import { colors } from '../../assets/colors';
-import { fonts } from '../../assets/fonts';
-import Navbar from '../../layout/Navbar';
 import TextArea from '../../components/TextArea';
 import firebase from 'firebase/app';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -68,20 +66,35 @@ function SignOut({ auth }) {
     )
   }
 
+function toDateTime(secs) {
+    var t = new Date(1970, 0, 1);
+    t.setSeconds(secs);
+    return t;
+}
+
 function ChatMessage(props) {
-    const { text, uid, photoURL } = props.message;
+    useEffect(()=>console.log(props), [props])
+    const { text, uid, photoURL, createdAt } = props.message;
     const classes = useStyles()
     return (<>
-        <div 
-            className={classes.message}
-            style={{ flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row' }}
-        >
-            <img 
-                className={classes.msgImg}
-                style={uid ? uid === props?.auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 } : undefined}
-                src={photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'} 
-            />
-            <p>{text}</p>
+        <div className={classes.message} style={{ flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row' }}>
+            <div style={{ display: 'flex', flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row' }}>
+                <img 
+                    className={classes.msgImg}
+                    style={uid ? uid === props?.auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 } : undefined}
+                    src={photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'} 
+                />
+                <p>{text}</p>
+            </div>
+            <p 
+                style={{ 
+                    fontSize: 12, 
+                    color: colors.textGrey,
+
+                }}
+            >
+                {`${toDateTime(createdAt?.seconds)}`}
+            </p>
         </div>
     </>)
   }
@@ -115,6 +128,7 @@ const useStyles = makeStyles(theme => ({
         height: '100%',
         marginBottom: 16,
         borderRadius: 8,
+        overflowY: 'auto'
     },
     textArea: {
         width: '100%',
@@ -140,6 +154,8 @@ const useStyles = makeStyles(theme => ({
     message: {
         display: 'flex',
         marginBottom: 8,
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
     msgImg: {
         width: 44,
