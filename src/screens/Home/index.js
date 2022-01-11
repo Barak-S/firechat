@@ -12,13 +12,19 @@ const ChatRoom = ({ auth, firestore }) => {
     const classes = useStyles()
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const dummy = useRef();
+    const scrollRef = useRef();
     const messagesRef = firestore.collection('messages');
     const query = messagesRef.orderBy('createdAt').limit(25);
 
     const [messages] = useCollectionData(query, { idField: 'id' });
 
     const [formValue, setFormValue] = useState('');
+
+    useEffect(()=>{
+        if (scrollRef?.current && messages){
+            scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [scrollRef, messages])
 
     const sendMessage = async (e) => {
         e.preventDefault();
@@ -32,7 +38,7 @@ const ChatRoom = ({ auth, firestore }) => {
         })
 
         setFormValue('');
-        dummy.current.scrollIntoView({ behavior: 'smooth' });
+        scrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
 
     return (
@@ -43,7 +49,7 @@ const ChatRoom = ({ auth, firestore }) => {
             <div className={classes.chatContainer}>
                 <div className={classes.messageContainer}>
                     {messages && messages.map(msg => <ChatMessage auth={auth} key={msg.id} message={msg} />)}
-                    <span ref={dummy}></span>
+                    <span ref={scrollRef}></span>
                 </div>
                 <form className={classes.messageForm} onSubmit={sendMessage}>
                     <Button className={classes.sendBtn} type="submit" disabled={!formValue}>Send!</Button>

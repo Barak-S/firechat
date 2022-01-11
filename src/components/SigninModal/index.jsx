@@ -3,11 +3,10 @@ import { Button, Typography, Dialog, makeStyles } from '@material-ui/core';
 import { colors } from '../../assets/colors';
 import classNames from 'classnames';
 
-const SigninModal = ({ signInWithGoogle, open, setOpen, className }) => {
+const SigninModal = ({ signInWithGoogle, open, className }) => {
   const classes = useStyles();
   return (
     <Dialog
-      onClose={() => setOpen(false)}
       open={open}
       classes={{ paper: classNames(classes.paper, className) }}
       BackdropProps={{
