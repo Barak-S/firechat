@@ -13,7 +13,6 @@ const CommonFooter = () => {
     <div className={classes.footer}>
         <Container className={classes.container}>
             <div className={classes.navigationBar}>
-                {/* <img src={Logo} className={classes.logo} /> */}
                 <div className={classes.linkSection}>
 
                 </div>
@@ -25,17 +24,13 @@ const CommonFooter = () => {
 
 const useStyles = makeStyles(theme => ({
   container: {
-    height: 138,
+    height: 65,
     maxWidth: 1484,
     display: 'flex',
     width: '100%',
-    [theme.breakpoints.down('sm')]: {
-      justifyContent: 'center',
-      height: 211,
-    }
   },
   footer: {
-    backgroundColor: colors.primaryBlue,
+    backgroundColor: colors.red,
   },
   logo :{
     height: 104,

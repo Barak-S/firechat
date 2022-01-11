@@ -8,32 +8,14 @@ import { FiMenu, FiX } from 'react-icons/fi';
 // import SocialSection from '../../components/SocialSection';
 
 
-const NavBar = ({ handleNavClick }) => {
+const NavBar = () => {
     const theme = useTheme()
     const classes = useStyles()
     const [open, setOpen] = useState(false)
-    const [blur, handleblur] = useState(false);
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     
-    const handleMenuItemClick = (pageRef) => {
-        handleNavClick && handleNavClick(pageRef)
-    }
-
-    useEffect(()=>{
-        window.addEventListener('scroll', ()=>{
-            if (window.scrollY > window.screen.height){
-                handleblur(true)
-            } else {
-                handleblur(false)
-            }
-        })
-        return ()=>{
-            window.removeEventListener('scroll')
-        }
-    }, [])
-
     return (
-        <AppBar position="fixed" className={classes.appBar} style={{ backdropFilter: blur ? 'blur(6px)' : 'none' }}>
+        <AppBar position="fixed" className={classes.appBar}>
             <Container className={classes.container}>
                 <div className={classes.navigationBar}>
                     {isMobile && (
@@ -42,25 +24,11 @@ const NavBar = ({ handleNavClick }) => {
                         :
                         (<FiMenu size={32} color={colors.white} className={classes.menuToggle} onClick={()=>setOpen(true)} />)
                     )}
-                    {/* <img src={isMobile && open ? LogoDark : Logo} style={{ height: isMobile && open ? 70 : 104 }} /> */}
-                    <div className={classes.linkSection}>
-                        <NavMenuItem handleClick={()=>handleMenuItemClick('about')} label={'About'} />
-                        <NavMenuItem handleClick={()=>handleMenuItemClick('gallery')} label={'Gallery'} />
-                        <NavMenuItem handleClick={()=>handleMenuItemClick('roadmap')} label={'Roadmap'} />
-                        <NavMenuItem handleClick={()=>handleMenuItemClick('team')} label={'Team'} />
-                        {/* <SocialSection style={{ marginLeft: 62 }} /> */}
-                    </div>
                 </div>
             </Container>
             {isMobile ? (
                 <div className={classes.mobileMenu} style={{ transform: open ? 'translateX(0%)' : 'translateY(-100%)', transition: '0.3s ease'}}>
-                    <div className={classes.linkSectionMobile}>
-                        <NavMenuItem handleClick={()=>{setOpen(false); handleMenuItemClick('about')}} label={'About'} />
-                        <NavMenuItem handleClick={()=>{setOpen(false); handleMenuItemClick('gallery')}} label={'Gallery'} />
-                        <NavMenuItem handleClick={()=>{setOpen(false); handleMenuItemClick('roadmap')}} label={'Roadmap'} />
-                        <NavMenuItem handleClick={()=>{setOpen(false); handleMenuItemClick('team')}} label={'Team'} />
-                        {/* <SocialSection style={{ margin: '0 auto' }} /> */}
-                    </div>
+                    
                 </div>
             ):(
                 undefined
@@ -79,17 +47,14 @@ const NavMenuItem = ({ label, handleClick }) => {
 
 const useStyles = makeStyles(theme => ({
     container: {
-        height: 126,
+        height: 88,
         maxWidth: 1484,
         display: 'flex',
         width: '100%',
         zIndex: 999,
-        [theme.breakpoints.down('sm')]:{
-            height: 96
-        }
     },
     appBar: {
-        backgroundColor: colors.primaryBlue,
+        backgroundColor: colors.red,
         boxShadow: 'none',
         zIndex: 990,
     },
