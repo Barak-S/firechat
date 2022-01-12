@@ -9,6 +9,7 @@ import { HiOutlinePaperAirplane } from 'react-icons/hi';
 
 const ChatMessage = ({ message, comments, auth, sendReply }) => {
     const { text, uid, id, photoURL, createdAt, displayName } = message;
+
     const [hover, setHover] = useState(false)
     const [expanded, setExpanded] = useState(false)
     const [replyValue, setReplyValue] = useState('')
@@ -18,13 +19,17 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
         setReplyValue(e.target.value)
     }
 
+    const handleSendReply = (id, replyValue) => {
+        sendReply(id, replyValue)
+        setReplyValue('')
+    }
+
     const toDateTime = (secs) => {
         var t = new Date(1970, 0, 1);
         t.setSeconds(secs);
         return t.toDateString() + " " + t.toLocaleTimeString()
     }
 
-    useEffect(()=>console.log(comments), [comments])
     return (<>
         <div 
             className={classes.message} 
@@ -36,25 +41,26 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                 <div style={{ 
                         display: 'flex', 
                         flexDirection: uid && uid === auth?.currentUser?.uid ? 'row-reverse' : 'row', 
-                        width: '100%'
+                        width: '100%',
+                        alignItems: 'center'
                     }}
                 >
                     {photoURL && (
                         <img 
                             alt={`${displayName}-profile-pic`}
                             className={classes.msgImg}
-                            style={uid === auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 }}
                             src={photoURL} 
                         />
                         )}
-                    {!displayName ? (
-                        <FaUserSecret 
-                            color={colors.black} 
-                            size={32}
-                            style={uid === auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 }}
-                        />
-                        ) : (<Typography>{displayName}</Typography>)}
-                    <div className={uid === auth?.currentUser?.uid ? classes.mineMessage : classes.yourMessage}>
+                    <Typography style={{ padding: '0px 8px'}}>{displayName ? displayName : 'Anonymous'}</Typography>
+                    <div 
+                        className={uid === auth?.currentUser?.uid ? classes.mineMessage : classes.yourMessage}
+                        style={{
+                            borderBottomRightRadius: expanded && uid !== auth?.currentUser?.uid ? 0 : 20,
+                            borderBottomLeftRadius: expanded && uid === auth?.currentUser?.uid ? 0 : 20,
+                            transition: '0.3s ease-in-out'
+                        }}
+                    >
                         {hover && !expanded && (
                             <>
                                 <BiCommentDetail 
@@ -74,18 +80,25 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                             />
                         )}
                         {text}
-                        {!!comments.length && <Typography onClick={()=>setExpanded(true)} className={classes.replyHeader}>{`${comments.length} Comments`}</Typography>}
+                        {!!comments.length && (
+                            <Typography 
+                                onClick={()=>setExpanded(true)} 
+                                className={uid === auth?.currentUser?.uid ? classes.replyHeaderMe : classes.replyHeaderYou}
+                            >
+                                {`${comments.length} Comments`}
+                            </Typography>
+                        )}
                     </div>
                 </div>
                 <div 
-                    className={classes.threadWrapper} 
+                    className={uid === auth?.currentUser?.uid ? classes.myThreadWrapper : classes.yourThreadWrapper} 
                     style={{ 
                         zIndex: expanded ? 2 : -1, 
                         opacity: expanded ? 1 : 0, 
                         marginTop: expanded ? '0%' : '-19%',
+                        display: 'flex',
                         transition: '0.3s ease-in-out',
                         width: '100%',
-                        display: 'flex',
                         flexDirection: 'column',
                     }}
                 >
@@ -93,29 +106,29 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                         <div style={{ paddingLeft: 6, borderLeft: '1px solid black', marginBottom: 6}}>
                             {comments.map((com)=>{
                                 return (
-                                    <Typography style={{ fontSize: 12}}><strong>{!!com.displayName && com.displayName}</strong>{'  '}{com.text}</Typography>
+                                    <Typography style={{ fontSize: 12}}><strong>{!!com.displayName ? com.displayName : 'Anonymous'}</strong>{'  '}{com.text}</Typography>
                                 )
                             })}
                         </div>
                     )}
                     <TextField
                         id="reply"
-                        label="reply"
+                        label="start typing..."
                         fullWidth
                         margin="none"
                         type="text"
                         autoComplete="off"
                         name="reply"
-                        className={classes.replyInput}
+                        className={uid === auth?.currentUser?.uid ? classes.myReplyInput : classes.yourReplyInput}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <HiOutlinePaperAirplane
                                         size={20} 
-                                        color={!replyValue.length ? 'rgba(0, 0, 0, 0.54)' : colors.green} 
+                                        color={!replyValue.length ? 'rgba(0, 0, 0, 0.54)': uid === auth?.currentUser?.uid ? colors.black : colors.green} 
                                         className={classes.sendReplyBtn}
                                         style={{ cursor: replyValue.length ? 'pointer' : 'auto' }}
-                                        onClick={()=>replyValue.length && sendReply(id, replyValue)}
+                                        onClick={()=>replyValue.length && handleSendReply(id, replyValue)}
                                     />
                                 </InputAdornment>
                             )
@@ -129,6 +142,9 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                 style={{ 
                     fontSize: 12, 
                     color: colors.textGrey,
+                    marginBottom: 'auto',
+                    whiteSpace: 'pre',
+                    padding: '0px 10px',
                 }}
             >
                 {`${toDateTime(createdAt?.seconds)}`}
@@ -140,7 +156,7 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
 const useStyles = makeStyles(theme => ({
     message: {
         display: 'flex',
-        marginBottom: 8,
+        marginTop: 8,
         alignItems: 'center',
         justifyContent: 'space-between',
         '& .MuiInput-underline:after': {
@@ -162,12 +178,9 @@ const useStyles = makeStyles(theme => ({
         position: 'relative',
         borderRadius: 20,
         padding: '8px 15px',
-        marginTop: 5,
         display: 'inline-block',
-        marginBottom: 8,
-        marginLeft: 8,
-        marginRight: 8,
         height: 'fit-content',
+        zIndex: 6,
         '&:hover': {
             cursor: 'pointer'
         }
@@ -178,12 +191,10 @@ const useStyles = makeStyles(theme => ({
         position: 'relative',
         borderRadius: 20,
         padding: '8px 15px',
-        marginTop: 5,
         display: 'inline-block',
-        marginBottom: 8,
-        marginLeft: 8,
-        marginRight: 8,
+        marginLeft: 'auto',
         height: 'fit-content',
+        zIndex: 6,
         '&:hover': {
             cursor: 'pointer'
         }
@@ -207,18 +218,29 @@ const useStyles = makeStyles(theme => ({
         top: -7,
         boxShadow: '0px 7px 16px 2px rgba(0, 0, 0, 0.16)',
     },
-    threadWrapper: {
+    myThreadWrapper: {
         paddingLeft: 8,
         padding: 12,
-        backgroundColor: colors.lightGrey,
-        backgroundColor: '#D9D8DB',
+        background: 'linear-gradient(to bottom, #35c958 0%, #34c859 100%)',
+        backgroundAttachment: 'fixed',
         borderBottomRightRadius: 8,
         borderBottomLeftRadius: 8,
     },
-    replyInput: {
-        backgroundColor: '#D9D8DB',
+    yourThreadWrapper: {
+        paddingLeft: 8,
+        padding: 12,
+        backgroundColor: '#E6E5EC',
+        borderBottomRightRadius: 8,
+        borderBottomLeftRadius: 8,
+    },
+    myReplyInput: {
+        background: 'linear-gradient(to bottom, #35c958 0%, #34c859 100%)',
+        backgroundAttachment: 'fixed',
+    },
+    yourReplyInput: {
+        backgroundColor: '#E6E5EC',
         '&:hover': {
-            backgroundColor: '#D9D8DB',
+            backgroundColor: '#E6E5EC',
         }
     },
     sendReplyBtn: {
@@ -226,7 +248,16 @@ const useStyles = makeStyles(theme => ({
             cursor: 'pointer',
         }
     },
-    replyHeader: {
+    replyHeaderMe: {
+        fontSize: 11,
+        lineHeight: 1,
+        paddingTop: 3,
+        '&:hover': {
+            textDecoration: 'underline',
+            color: colors.white,
+        }
+    },
+    replyHeaderYou: {
         fontSize: 11,
         lineHeight: 1,
         paddingTop: 3,
