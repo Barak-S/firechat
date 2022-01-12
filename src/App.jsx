@@ -9,6 +9,9 @@ import firebase from 'firebase/app';
 import { auth } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import SigninModal from './components/SigninModal';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Toast } from './components/Feedback/Toast';
 
 const firestore = firebase.firestore();
 
@@ -20,12 +23,11 @@ function App() {
     firebase.auth().signInAnonymously()
     .then(({ user }) => user.updateProfile({ displayName: username }))
     .then(() => {
-      console.log("User was updated!");
       setShowSignIn(false)
+      Toast.success('Sign In Successful!');
     })
     .catch((error) => {
-      console.log("Error creating user session: ", error);
-      alert("Could not log user in.")
+      Toast.error('An error occured please try again');
     })
   }
 
@@ -44,6 +46,7 @@ function App() {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
+      <ToastContainer hideProgressBar toastClassName="custom-notify" position="top-center" />
       <NavBar />
       <SigninModal 
         open={showSignIn} 
