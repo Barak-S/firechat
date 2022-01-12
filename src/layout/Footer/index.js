@@ -1,13 +1,11 @@
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
-import { Container, useMediaQuery, useTheme } from '@material-ui/core';
+import { Container } from '@material-ui/core';
 import { colors } from '../../assets/colors/index';
 const pack = require('../../../package.json');
 
 const CommonFooter = () => {
   const classes = useStyles()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <div className={classes.footer}>
         <Container className={classes.container}>

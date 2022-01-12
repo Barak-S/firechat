@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles, TextareaAutosize, FormControl } from '@material-ui/core';
 import classNames from 'classnames';
 
-const TextArea = ({ onChange, name, value, resize = true, className, style }) => {
+const TextArea = ({ onChange, name, value, readOnly, resize = true, className, style }) => {
   const classes = useStyles();
   const [focus, setFocus] = useState(false);
   const isActive = focus || value;
@@ -29,6 +29,8 @@ const TextArea = ({ onChange, name, value, resize = true, className, style }) =>
           className={classes.textArea}
           value={value}
           style={{ overflow: 'auto', resize: resize ? 'vertical' : 'none' }}
+          readOnly={readOnly}
+          placeholder={readOnly ? 'Please sign in to send a message' : 'start typing...'}
         />
       </label>
     </FormControl>

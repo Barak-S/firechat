@@ -1,16 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useMediaQuery, useTheme, Button, Typography } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { colors } from '../../assets/colors';
 import TextArea from '../../components/TextArea';
 import firebase from 'firebase/app';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
-import { AiOutlinePoweroff } from 'react-icons/ai';
-import { FaUserSecret } from 'react-icons/fa';
+import AuthToggle from '../../components/AuthToggle';
+import ChatMessage from '../../components/ChatMessage';
 
-
-const ChatRoom = ({ auth, firestore }) => {
+const ChatRoom = ({ 
+    auth, 
+    user,
+    firestore, 
+    toggleSignIn,
+    setToggleSignIn
+}) => {
     const classes = useStyles()
     const scrollRef = useRef();
     const messagesRef = firestore.collection('messages');
@@ -26,9 +31,15 @@ const ChatRoom = ({ auth, firestore }) => {
         }
     }, [scrollRef, messages])
 
+    useEffect(()=>{
+        if(!user){
+            setFormValue('')
+        }
+    }, [user])
+
     const sendMessage = async (e) => {
         e.preventDefault();
-        const { uid, photoURL, displayName, userColor } = auth.currentUser;
+        const { uid, photoURL, displayName } = auth.currentUser;
 
         await messagesRef.add({
             text: formValue,
@@ -36,7 +47,6 @@ const ChatRoom = ({ auth, firestore }) => {
             uid,
             photoURL,
             displayName,
-            userColor
         })
 
         setFormValue('');
@@ -46,7 +56,11 @@ const ChatRoom = ({ auth, firestore }) => {
     return (
         <div className={classes.container}>
             <div className={classes.signOutContainer}>
-                <SignOut auth={auth} />
+                <AuthToggle 
+                    auth={auth} 
+                    toggleSignIn={toggleSignIn}
+                    setToggleSignIn={setToggleSignIn}
+                />
             </div>
             <div className={classes.chatContainer}>
                 <div className={classes.messageContainer}>
@@ -63,6 +77,7 @@ const ChatRoom = ({ auth, firestore }) => {
                         Send
                     </Button>
                     <TextArea 
+                        readOnly={!user}
                         onChange={(e) => setFormValue(e.target.value)} 
                         placeholder="Say something nice!"
                         value={formValue} 
@@ -74,60 +89,6 @@ const ChatRoom = ({ auth, firestore }) => {
         </div>
     );
 };
-
-const SignOut = ({ auth }) => {
-    const classes = useStyles()
-    return auth.currentUser && (
-        <Button 
-            className={classes.signOutBtn} 
-            onClick={() => auth.signOut()}
-            endIcon={<AiOutlinePoweroff size={20} />}
-        >
-            Sign Out
-        </Button>
-    )
-  }
-
-  
-const ChatMessage = (props) => {
-    const { text, uid, photoURL, createdAt, displayName, userColor } = props.message;
-    const classes = useStyles()
-    const toDateTime = (secs) => {
-        var t = new Date(1970, 0, 1);
-        t.setSeconds(secs);
-        return t;
-    }
-    return (<>
-        <div className={classes.message} style={{ flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row' }}>
-            <div style={{ display: 'flex', flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row', alignItems: 'center' }}>
-                {photoURL && (
-                    <img 
-                        className={classes.msgImg}
-                        style={uid ? uid === props?.auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 } : undefined}
-                        src={photoURL} 
-                    />
-                )}
-                {!displayName ? (
-                    <FaUserSecret 
-                        color={colors.black} 
-                        size={32}
-                        style={uid ? uid === props?.auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 } : undefined}
-                    />
-                ) : (<Typography style={{ color: userColor ? userColor : '#000' }}>{displayName}</Typography>)}
-                <p>{text}</p>
-            </div>
-            <p 
-                style={{ 
-                    fontSize: 12, 
-                    color: colors.textGrey,
-
-                }}
-            >
-                {`${toDateTime(createdAt?.seconds)}`}
-            </p>
-        </div>
-    </>)
-  }
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -194,17 +155,6 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: colors.black
         },
     },
-    message: {
-        display: 'flex',
-        marginBottom: 8,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    msgImg: {
-        width: 44,
-        height: 44,
-        borderRadius: 100,
-    }
   }))
 
 export default ChatRoom

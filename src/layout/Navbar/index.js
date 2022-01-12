@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Container, useMediaQuery, useTheme, Typography } from '@material-ui/core';
 import { colors } from '../../assets/colors/index';
 import { FiMenu, FiX } from 'react-icons/fi';
 import { SiFirebase } from 'react-icons/si';
-
 
 const NavBar = () => {
     const theme = useTheme()
@@ -37,14 +36,6 @@ const NavBar = () => {
     );
 };
 
-const NavMenuItem = ({ label, handleClick }) => {
-    const classes = useStyles()
-    return(
-        <span onClick={handleClick && handleClick} className={classes.menuItem}>{label}</span>
-    )
-
-}
-
 const useStyles = makeStyles(theme => ({
     container: {
         height: 88,
@@ -55,7 +46,6 @@ const useStyles = makeStyles(theme => ({
     },
     appBar: {
         backgroundColor: colors.white,
-        boxShadow: 'none',
         zIndex: 990,
         boxShadow: '0px 2px 4px rgba(194, 194, 194, 0.25)',
     },
@@ -91,22 +81,16 @@ const useStyles = makeStyles(theme => ({
         color: colors.red,
         fontSize: 24,
         fontWeight: 600,
-        textTransform: 'uppercase',
         paddingTop: 4,
         paddingLeft: 4,
-        fontStyle: 'italic'
-    },
-    menuItem: {
+        fontStyle: 'italic',
         textTransform: 'uppercase',
         display: 'inline-block',
         paddingBottom: 3,
         textDecoration: 'none',
-        fontSize: 19,
-        fontWeight: 500,
-        color: colors.white,
         margin: '0px 12.5px',
         cursor: 'pointer',
-        backgroundImage: `linear-gradient(${colors.white}, ${colors.white}), linear-gradient(transparent, transparent)`,
+        backgroundImage: `linear-gradient(${colors.red}, ${colors.red}), linear-gradient(transparent, transparent)`,
         backgroundSize: '0 3px, auto',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center bottom',
@@ -114,15 +98,7 @@ const useStyles = makeStyles(theme => ({
         '&:hover': {
             backgroundSize: '100% 3px, auto',
         },
-        [theme.breakpoints.down('sm')]: {
-            fontSize: 26,
-            margin: '22px 27px',
-            marginLeft: 95,
-            color: colors.white,
-            textShadow: 'none'
-        }
-    }
-
+    },
   }))
 
 export default NavBar;

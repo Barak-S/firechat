@@ -11,6 +11,7 @@ const SigninModal = ({
     signInAnonymously, 
     signInAnonymouslyWithUsername,
     open, 
+    setOpen,
     className 
 }) => {
     const classes = useStyles();
@@ -29,6 +30,7 @@ const SigninModal = ({
   return (
     <Dialog
       open={open}
+      onClose={()=>setOpen(false)}
       classes={{ paper: classNames(classes.paper, className) }}
       BackdropProps={{
         classes: {
@@ -63,7 +65,7 @@ const SigninModal = ({
                 >
                 <span className={classes.btnLabel}>{'Continue'}</span>
             </Button>
-            <Typography style={{ textAlign: 'center', width: '100%', marginBottom: 12, marginTop: 6 }}>{'OR'}</Typography>
+            <Typography style={{ textAlign: 'center', width: '100%', marginBottom: 12, marginTop: 10 }}>{'OR'}</Typography>
             <Button 
                 className={classes.signInBtn} 
                 onClick={signInWithGoogle}
@@ -92,7 +94,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     borderRadius: '20px !important',
     width: 344,
-    height: 416,
+    height: 424,
   },
   signInBtn: {
         backgroundColor: colors.black,
@@ -109,7 +111,7 @@ const useStyles = makeStyles(theme => ({
         color: colors.white,
         fontWeight: 600,
         borderRadius: 8,
-        marginTop: 24,
+        marginTop: 12,
         width: '100%',
         '&:hover':{
             backgroundColor: colors.black
@@ -136,6 +138,7 @@ const useStyles = makeStyles(theme => ({
         border: `1px solid ${colors.red}`,
         backgroundColor: colors.white,
         borderRadius: 24,
+        marginTop: 8,
         '& .MuiButton-label': {
             marginRight: -24,
             transition: '0.3s ease-in-out all',
