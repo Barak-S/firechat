@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useMediaQuery, useTheme, Button } from '@material-ui/core';
+import { useMediaQuery, useTheme, Button, Typography } from '@material-ui/core';
 import { colors } from '../../assets/colors';
 import TextArea from '../../components/TextArea';
 import firebase from 'firebase/app';
@@ -12,9 +12,6 @@ import { FaUserSecret } from 'react-icons/fa';
 
 const ChatRoom = ({ auth, firestore }) => {
     const classes = useStyles()
-    // const theme = useTheme()
-    // const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
     const scrollRef = useRef();
     const messagesRef = firestore.collection('messages');
     const query = messagesRef.orderBy('createdAt').limit(25);
@@ -31,13 +28,15 @@ const ChatRoom = ({ auth, firestore }) => {
 
     const sendMessage = async (e) => {
         e.preventDefault();
-        const { uid, photoURL } = auth.currentUser;
+        const { uid, photoURL, displayName, userColor } = auth.currentUser;
 
         await messagesRef.add({
             text: formValue,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             uid,
-            photoURL
+            photoURL,
+            displayName,
+            userColor
         })
 
         setFormValue('');
@@ -76,7 +75,7 @@ const ChatRoom = ({ auth, firestore }) => {
     );
 };
 
-function SignOut({ auth }) {
+const SignOut = ({ auth }) => {
     const classes = useStyles()
     return auth.currentUser && (
         <Button 
@@ -89,32 +88,32 @@ function SignOut({ auth }) {
     )
   }
 
-function toDateTime(secs) {
-    var t = new Date(1970, 0, 1);
-    t.setSeconds(secs);
-    return t;
-}
-
-function ChatMessage(props) {
-    useEffect(()=>console.log(props), [props])
-    const { text, uid, photoURL, createdAt } = props.message;
+  
+const ChatMessage = (props) => {
+    const { text, uid, photoURL, createdAt, displayName, userColor } = props.message;
     const classes = useStyles()
+    const toDateTime = (secs) => {
+        var t = new Date(1970, 0, 1);
+        t.setSeconds(secs);
+        return t;
+    }
     return (<>
         <div className={classes.message} style={{ flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row' }}>
-            <div style={{ display: 'flex', flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row' }}>
-                {photoURL ? (
+            <div style={{ display: 'flex', flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row', alignItems: 'center' }}>
+                {photoURL && (
                     <img 
                         className={classes.msgImg}
                         style={uid ? uid === props?.auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 } : undefined}
                         src={photoURL} 
                     />
-                ) : (
+                )}
+                {!displayName ? (
                     <FaUserSecret 
                         color={colors.black} 
                         size={32}
                         style={uid ? uid === props?.auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 } : undefined}
                     />
-                )}
+                ) : (<Typography style={{ color: userColor ? userColor : '#000' }}>{displayName}</Typography>)}
                 <p>{text}</p>
             </div>
             <p 

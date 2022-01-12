@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 import './App.css';
@@ -18,21 +18,33 @@ const firestore = firebase.firestore();
 
 function App() {
   const [user] = useAuthState(auth);
-  const [messages, setMessages] = useState([])
 
   const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider);
   }
 
+  const signInAnonymouslyWithUsername = (username) => {
+    var randomColor = Math.floor(Math.random()*16777215).toString(16);
+    firebase.auth().signInAnonymously()
+    .then(({ user }) => user.updateProfile({ displayName: username }))
+    .then(() => {
+      console.log("User was updated!", auth.currentUser.displayName);
+    })
+    .catch((error) => {
+      console.log("Error creating user session: ", error);
+      alert("Could not log user in.")
+    })
+  }
+
   const signInAnonymously = () => {
     const provider = firebase.auth().signInAnonymously();
     auth.signInWithPopup(provider);
-    // firebase.auth().signInAnonymously().catch((error) => {
-    //   console.log("Error creating user session: ", error);
-    //   alert("Could not log user in.")
-    // })
   }
+
+  useEffect(()=>{
+    console.log(user)
+  }, [user])
 
 
   return (
@@ -44,9 +56,13 @@ function App() {
           open={true} 
           signInWithGoogle={signInWithGoogle} 
           signInAnonymously={signInAnonymously}
+          signInAnonymouslyWithUsername={signInAnonymouslyWithUsername}
         />
       )}
-      <ChatRoom auth={auth} firestore={firestore} />
+      <ChatRoom 
+        auth={auth} 
+        firestore={firestore} 
+      />
     </MuiThemeProvider>
   );
 }

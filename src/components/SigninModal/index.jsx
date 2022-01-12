@@ -1,12 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Typography, Dialog, makeStyles, TextField } from '@material-ui/core';
 import { colors } from '../../assets/colors';
 import classNames from 'classnames';
 import { FcGoogle } from 'react-icons/fc';
 import { FaUserSecret } from 'react-icons/fa';
+import { BsArrowRight } from 'react-icons/bs';
 
-const SigninModal = ({ signInWithGoogle, signInAnonymously, open, className }) => {
-  const classes = useStyles();
+const SigninModal = ({ 
+    signInWithGoogle, 
+    signInAnonymously, 
+    signInAnonymouslyWithUsername,
+    open, 
+    className 
+}) => {
+    const classes = useStyles();
+    const [hover, setHover] = useState(false)
+    const [username, setUsername] = useState('')
+
+    const handleUsernameChange = (e) => {
+        setUsername(e.target.value)
+    }
+
+    const handleUsernameSubmit = (e) => {
+        e.preventDefault()
+        signInAnonymouslyWithUsername(username)
+    }
+
   return (
     <Dialog
       open={open}
@@ -29,9 +48,21 @@ const SigninModal = ({ signInWithGoogle, signInAnonymously, open, className }) =
                 type="username"
                 autoComplete="off"
                 name="username"
-                // onChange={handleChange}
-                // value={loginParams.email || ''}
+                onChange={handleUsernameChange}
+                value={username}
             />
+            <Button
+                variant="outlined"
+                color="primary"
+                type="submit"
+                className={classNames(classes.commonBtn, hover && classes.hoverClass)}
+                onClick={handleUsernameSubmit}
+                endIcon={<BsArrowRight />}
+                onMouseEnter={() => setHover(true)}
+                onMouseLeave={() => setHover(false)}
+                >
+                <span className={classes.btnLabel}>{'Continue'}</span>
+            </Button>
             <Typography style={{ textAlign: 'center', width: '100%', marginBottom: 12, marginTop: 6 }}>{'OR'}</Typography>
             <Button 
                 className={classes.signInBtn} 
@@ -73,7 +104,7 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: colors.black
         }
   },
-  signInAnonymouslyBtn: {
+    signInAnonymouslyBtn: {
         backgroundColor: colors.black,
         color: colors.white,
         fontWeight: 600,
@@ -83,21 +114,53 @@ const useStyles = makeStyles(theme => ({
         '&:hover':{
             backgroundColor: colors.black
         }
-  },
-  authWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    // justifyContent: 'center',
-    height: 200,
-  },
-  authTitle: {
-      fontSize: 21,
-      textAlign: 'center',
-      paddingBottom: 22,
-      color: colors.red,
-      fontWeight: 500,
-  }
+    },
+    authWrapper: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    authTitle: {
+        fontSize: 21,
+        textAlign: 'center',
+        paddingBottom: 22,
+        color: colors.red,
+        fontWeight: 500,
+        },
+    commonBtn: {
+        fontWeight: 400,
+        maxWidth: 245,
+        padding: '8px 0',
+        width: '100%',
+        position: 'relative',
+        border: `1px solid ${colors.red}`,
+        backgroundColor: colors.white,
+        borderRadius: 24,
+        '& .MuiButton-label': {
+            marginRight: -24,
+            transition: '0.3s ease-in-out all',
+        },
+        '& [class*="-endIcon"]': {
+            opacity: 0,
+            color: colors.red,
+            transition: '0.5s ease-out all',
+        },
+        btnLabel: {
+            fontWeight: 400,
+        },
+    },
+    hoverClass: {
+        backgroundColor: `${colors.red} !important`,
+        color: colors.white,
+        '& > *:first-child': {
+            transform: 'translateX(-10px)',
+            opacity: 1,
+        },
+        '& [class*="-endIcon"]': {
+            opacity: 1,
+            color: colors.white,
+        },
+    },
 }));
 
 export default SigninModal;
