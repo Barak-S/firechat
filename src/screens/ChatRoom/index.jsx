@@ -8,6 +8,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import AuthToggle from '../../components/AuthToggle';
 import ChatMessage from '../../components/ChatMessage';
+import { Toast } from '../../components/Feedback/Toast';
 
 const ChatRoom = ({ 
     auth, 
@@ -26,7 +27,9 @@ const ChatRoom = ({
 
     useEffect(()=>{
         if (scrollRef?.current && messages){
-            scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+            if(!messages[messages.length -1].replyId){
+                scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
         }
     }, [scrollRef, messages])
 
@@ -52,6 +55,26 @@ const ChatRoom = ({
         scrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
 
+    const sendReply = async (replyId, replyMessage) => {
+        if(auth?.currentUser){
+            const { uid, photoURL, displayName } = auth.currentUser;
+            await messagesRef.add({
+                text: replyMessage,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                uid,
+                photoURL,
+                displayName,
+                replyId,
+            })
+        } else {
+            Toast.error('Sign in to reply')
+        }
+    }
+
+    const getComments = (id) => {
+        return messages.filter((msg)=>msg.replyId === id)
+    }
+
     return (
         <div className={classes.container}>
             <div className={classes.signOutContainer}>
@@ -62,7 +85,20 @@ const ChatRoom = ({
             </div>
             <div className={classes.chatContainer}>
                 <div className={classes.messageContainer}>
-                    {messages && messages.map(msg => <ChatMessage auth={auth} key={msg.id} message={msg} />)}
+                    {messages && messages.map(msg => {
+                        if (!msg.replyId){
+                            return(
+                                <ChatMessage 
+                                    auth={auth} 
+                                    key={msg.id} 
+                                    message={msg} 
+                                    sendReply={sendReply}
+                                    comments={getComments(msg.id)}
+                                />
+                            )
+                        }
+                    }
+                    )}
                     <span ref={scrollRef}></span>
                 </div>
                 <form className={classes.messageForm} onSubmit={sendMessage}>
@@ -137,7 +173,7 @@ const useStyles = makeStyles(theme => ({
     sendBtn: {
         marginLeft: 'auto',
         marginBottom: 8,
-        backgroundColor: colors.red,
+        backgroundColor: colors.green,
         color: colors.white,
         fontWeight: 500,
         borderRadius: 8,
