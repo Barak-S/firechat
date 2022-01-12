@@ -1,33 +1,53 @@
-import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Container, useMediaQuery, useTheme, Typography } from '@material-ui/core';
 import { colors } from '../../assets/colors/index';
 import { FiMenu, FiX } from 'react-icons/fi';
 import { SiFirebase } from 'react-icons/si';
+import AuthToggle from '../../components/AuthToggle';
+import { FaUserSecret } from 'react-icons/fa'; 
 
-const NavBar = () => {
+const NavBar = ({ auth, user, navOpen, setNavOpen, setToggleSignIn }) => {
     const theme = useTheme()
     const classes = useStyles()
-    const [open, setOpen] = useState(false)
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     
     return (
         <AppBar position="fixed" className={classes.appBar}>
             <Container className={classes.container}>
                 <div className={classes.navigationBar}>
-                    <SiFirebase size={40} color={'orange'} />
-                    <Typography className={classes.fireChatHeader}>{'Firechat'}</Typography>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <SiFirebase size={isMobile ? 24 : 40} color={'orange'} />
+                        <Typography className={classes.fireChatHeader}>{'Firechat'}</Typography>
+                    </div>
+                    {user ? auth?.currentUser?.photoURL ? (
+                        <img 
+                            src={auth.currentUser.photoURL}
+                            className={classes.profileImage}
+                        />
+                    ) : (
+                        <FaUserSecret 
+                            color={colors.red} 
+                            size={isMobile ? 24 : 45}
+                            className={classes.anonymousProfile}
+                        />
+                    ) : undefined}
+                
                     {isMobile && (
-                        open ? 
-                        (<FiX size={32} className={classes.menuToggle} onClick={()=>setOpen(false)} />)
+                        navOpen ? 
+                        (<FiX size={32} color={colors.red} className={classes.menuToggle} onClick={()=>setNavOpen(false)} />)
                         :
-                        (<FiMenu size={32} color={colors.white} className={classes.menuToggle} onClick={()=>setOpen(true)} />)
+                        (<FiMenu size={32} color={colors.red} className={classes.menuToggle} onClick={()=>setNavOpen(true)} />)
                     )}
                 </div>
             </Container>
             {isMobile ? (
-                <div className={classes.mobileMenu} style={{ transform: open ? 'translateX(0%)' : 'translateY(-100%)', transition: '0.3s ease'}}>
-                    
+                <div className={classes.mobileMenu} style={{ transform: navOpen ? 'translateX(0%)' : 'translateY(-100%)', transition: '0.3s ease'}}>
+                    <div style={{ width: '100%', display: 'flex', marginTop: 125, justifyContent: 'center' }}>
+                        <AuthToggle 
+                            auth={auth} 
+                            setToggleSignIn={setToggleSignIn}
+                        />
+                    </div>
                 </div>
             ):(
                 undefined
@@ -60,7 +80,7 @@ const useStyles = makeStyles(theme => ({
     },
     mobileMenu: {
         height: '100vh',
-        backgroundColor: colors.primaryBlue,
+        backgroundColor: colors.white,
         width: '100%',
         display: 'flex',
         zIndex: 990,
@@ -68,7 +88,7 @@ const useStyles = makeStyles(theme => ({
     },
     navigationBar: {
         display: 'flex',
-        justifyContent: 'start',
+        justifyContent: 'space-between',
         width: '100%',
         alignItems: 'center',
         height: '100%',
@@ -98,7 +118,28 @@ const useStyles = makeStyles(theme => ({
         '&:hover': {
             backgroundSize: '100% 3px, auto',
         },
+        [theme.breakpoints.down('sm')]: {
+            fontSize: 18,
+            paddingLeft: 0,
+        }
     },
+    profileImage: {
+        height: 55,
+        width: 55,
+        borderRadius: 100,
+        [theme.breakpoints.down('sm')]: {
+            position: 'absolute',
+            right: 12,
+            height: 34,
+            width: 34,
+        }
+    },
+    anonymousProfile: {
+        [theme.breakpoints.down('sm')]: {
+            position: 'absolute',
+            right: 12,
+        }
+    }
   }))
 
 export default NavBar;

@@ -13,7 +13,6 @@ const ChatRoom = ({
     auth, 
     user,
     firestore, 
-    toggleSignIn,
     setToggleSignIn
 }) => {
     const classes = useStyles()
@@ -58,7 +57,6 @@ const ChatRoom = ({
             <div className={classes.signOutContainer}>
                 <AuthToggle 
                     auth={auth} 
-                    toggleSignIn={toggleSignIn}
                     setToggleSignIn={setToggleSignIn}
                 />
             </div>
@@ -99,6 +97,8 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
+        maxWidth: 1484,
+        margin: '0 auto',
     },
     chatContainer: {
         maxWidth: 600,
@@ -113,7 +113,11 @@ const useStyles = makeStyles(theme => ({
     },
     signOutContainer: {
         position: 'absolute',
-        right: 20, top: 110
+        right: 20, 
+        top: 110,
+        [theme.breakpoints.down('sm')]: {
+            display: 'none'
+        }
     },
     messageContainer: {
         width: '100%',

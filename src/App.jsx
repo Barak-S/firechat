@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
-import './App.css';
 import theme from './assets/theme';
 import ChatRoom from './screens/ChatRoom';
 import NavBar from './layout/Navbar';
@@ -18,12 +17,14 @@ const firestore = firebase.firestore();
 function App() {
   const [user] = useAuthState(auth);
   const [showSignIn, setShowSignIn] = useState(false)
+  const [navOpen, setNavOpen] = useState(false)
 
   const signInAnonymouslyWithUsername = (username) => {
     firebase.auth().signInAnonymously()
     .then(({ user }) => user.updateProfile({ displayName: username }))
     .then(() => {
       setShowSignIn(false)
+      setNavOpen(false)
       Toast.success('Sign In Successful!');
     })
     .catch((error) => {
@@ -34,12 +35,16 @@ function App() {
   const signInAnonymously = () => {
     const provider = firebase.auth().signInAnonymously();
     setShowSignIn(false);
+    // add toast after promise
+    setNavOpen(false)
     auth.signInWithPopup(provider);
   }
 
   const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     setShowSignIn(false);
+    // add toast after promise
+    setNavOpen(false)
     auth.signInWithPopup(provider);
   }
 
@@ -47,7 +52,13 @@ function App() {
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <ToastContainer hideProgressBar toastClassName="custom-notify" position="top-center" />
-      <NavBar />
+      <NavBar
+        auth={auth} 
+        user={user}
+        navOpen={navOpen}
+        setNavOpen={setNavOpen}
+        setToggleSignIn={setShowSignIn}
+      />
       <SigninModal 
         open={showSignIn} 
         setOpen={setShowSignIn}
@@ -59,7 +70,6 @@ function App() {
         auth={auth} 
         user={user}
         firestore={firestore} 
-        toggleSignIn={showSignIn} 
         setToggleSignIn={setShowSignIn}
       />
     </MuiThemeProvider>

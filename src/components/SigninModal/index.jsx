@@ -95,6 +95,11 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '20px !important',
     width: 344,
     height: 424,
+    [theme.breakpoints.down('sm')]: {
+        padding: '25px 14px',
+        height: 'auto',
+        margin: '0px 14px',
+    }
   },
   signInBtn: {
         backgroundColor: colors.black,

@@ -30,6 +30,7 @@ const AuthToggle = ({ auth, setToggleSignIn }) => {
         color: colors.white,
         fontWeight: 500,
         borderRadius: 8,
+        height: 36,
         boxShadow: '0px 2px 4px rgba(194, 194, 194, 0.25)',
         '&:hover': {
             backgroundColor: colors.black
