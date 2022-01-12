@@ -5,12 +5,15 @@ import { colors } from '../../assets/colors';
 import TextArea from '../../components/TextArea';
 import firebase from 'firebase/app';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { HiOutlinePaperAirplane } from 'react-icons/hi';
+import { AiOutlinePoweroff } from 'react-icons/ai';
+import { FaUserSecret } from 'react-icons/fa';
 
 
 const ChatRoom = ({ auth, firestore }) => {
-    const theme = useTheme()
     const classes = useStyles()
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    // const theme = useTheme()
+    // const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const scrollRef = useRef();
     const messagesRef = firestore.collection('messages');
@@ -52,7 +55,14 @@ const ChatRoom = ({ auth, firestore }) => {
                     <span ref={scrollRef}></span>
                 </div>
                 <form className={classes.messageForm} onSubmit={sendMessage}>
-                    <Button className={classes.sendBtn} type="submit" disabled={!formValue}>Send!</Button>
+                    <Button 
+                        className={classes.sendBtn} 
+                        type="submit" 
+                        disabled={!formValue}
+                        endIcon={<HiOutlinePaperAirplane size={20} />}
+                    >
+                        Send
+                    </Button>
                     <TextArea 
                         onChange={(e) => setFormValue(e.target.value)} 
                         placeholder="Say something nice!"
@@ -67,8 +77,15 @@ const ChatRoom = ({ auth, firestore }) => {
 };
 
 function SignOut({ auth }) {
+    const classes = useStyles()
     return auth.currentUser && (
-      <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
+        <Button 
+            className={classes.signOutBtn} 
+            onClick={() => auth.signOut()}
+            endIcon={<AiOutlinePoweroff size={20} />}
+        >
+            Sign Out
+        </Button>
     )
   }
 
@@ -85,11 +102,19 @@ function ChatMessage(props) {
     return (<>
         <div className={classes.message} style={{ flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row' }}>
             <div style={{ display: 'flex', flexDirection: uid && uid === props?.auth?.currentUser?.uid ? 'row-reverse' : 'row' }}>
-                <img 
-                    className={classes.msgImg}
-                    style={uid ? uid === props?.auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 } : undefined}
-                    src={photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'} 
-                />
+                {photoURL ? (
+                    <img 
+                        className={classes.msgImg}
+                        style={uid ? uid === props?.auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 } : undefined}
+                        src={photoURL} 
+                    />
+                ) : (
+                    <FaUserSecret 
+                        color={colors.black} 
+                        size={32}
+                        style={uid ? uid === props?.auth?.currentUser?.uid ? { marginLeft: 16} : { marginRight: 16 } : undefined}
+                    />
+                )}
                 <p>{text}</p>
             </div>
             <p 
@@ -108,7 +133,7 @@ function ChatMessage(props) {
 const useStyles = makeStyles(theme => ({
     container: {
         minHeight: '100vh',
-        backgroundColor: colors.white,
+        backgroundColor: '#FAFAFB',
         paddingTop: 88,
         display: 'flex',
         justifyContent: 'center',
@@ -124,6 +149,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         padding: '14px 16px',
+        boxShadow: '0px 2px 4px rgba(194, 194, 194, 0.25)',
     },
     signOutContainer: {
         position: 'absolute',
@@ -147,15 +173,27 @@ const useStyles = makeStyles(theme => ({
     sendBtn: {
         marginLeft: 'auto',
         marginBottom: 8,
-        backgroundColor: colors.green,
+        backgroundColor: colors.red,
         color: colors.white,
         fontWeight: 500,
+        borderRadius: 8,
+        boxShadow: '0px 2px 4px rgba(194, 194, 194, 0.25)',
         '&:hover': {
             backgroundColor: colors.black
         },
         '&.Mui-disabled': {
             backgroundColor: colors.white,
           },
+    },
+    signOutBtn: {
+        backgroundColor: colors.red,
+        color: colors.white,
+        fontWeight: 500,
+        borderRadius: 8,
+        boxShadow: '0px 2px 4px rgba(194, 194, 194, 0.25)',
+        '&:hover': {
+            backgroundColor: colors.black
+        },
     },
     message: {
         display: 'flex',

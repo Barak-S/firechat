@@ -1,50 +1,22 @@
 import { createTheme } from '@material-ui/core/styles';
+import { colors } from '../colors'
 
 export default createTheme({
     palette: {
         primary: { 
-            dark: '#11274B', 
-            main: '#2b4061', 
-            light: 'rgb(236, 242, 251)', 
+            main: colors.red, 
         },
         secondary: { 
-            dark: '#cd9a37', 
-            main: '#F3BD48' 
+            main: colors.black 
         },
     },
     overrides: {
         MuiButton: {
-            contained: {
-                // minWidth: 88,
-                // padding: '3px 16px',
-                // backgroundColor: '#2b4061',
-                // color: '#FFF',
-                // fontWeight: 500,
-                // borderRadius: 30,
-                // '&:hover': {
-                //     backgroundColor: '#cd9a37',
-                // }
-            },
-            outlined: {
-                // padding: '3px 12px',
-                // borderRadius: 30
-            },
-            textSecondary: {
-                // backgroundColor: '#11274B',
-                // color: '#FFF',
-                // '&:hover': {
-                //     border: 'solid 1px #11274B',
-                //     color: '#11274B',
-                // }
-            }
+            contained: {},
+            outlined: {},
         },
     },
     typography: {
-        // fontFamily: [
-        //     'Sentinel-Black',
-        //     'Roboto',
-        //     'sans-serif'
-        // ].join(','),
         secondaryFont: 'Roboto',
         h1: {
             color: 'inherit',
@@ -64,13 +36,6 @@ export default createTheme({
         h6: {
             color: 'inherit',
         },
-        button: {
-            color: 'inherit',
-            fontSize: '16px',
-            letterSpacing: '1.25px',
-            // fontFamily: 'Roboto',
-            fontWeight: '300',
-            textTransform: 'none'
-        },
+        button: {},
     }
 });

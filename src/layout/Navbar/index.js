@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Container, useMediaQuery, useTheme, Typography } from '@material-ui/core';
 import { colors } from '../../assets/colors/index';
 import { FiMenu, FiX } from 'react-icons/fi';
+import { SiFirebase } from 'react-icons/si';
 
 
 const NavBar = () => {
@@ -15,7 +16,8 @@ const NavBar = () => {
         <AppBar position="fixed" className={classes.appBar}>
             <Container className={classes.container}>
                 <div className={classes.navigationBar}>
-                    <Typography className={classes.fireChatHeader}>{'Firechat 🔥'}</Typography>
+                    <SiFirebase size={40} color={'orange'} />
+                    <Typography className={classes.fireChatHeader}>{'Firechat'}</Typography>
                     {isMobile && (
                         open ? 
                         (<FiX size={32} className={classes.menuToggle} onClick={()=>setOpen(false)} />)
@@ -52,9 +54,10 @@ const useStyles = makeStyles(theme => ({
         zIndex: 999,
     },
     appBar: {
-        backgroundColor: colors.red,
+        backgroundColor: colors.white,
         boxShadow: 'none',
         zIndex: 990,
+        boxShadow: '0px 2px 4px rgba(194, 194, 194, 0.25)',
     },
     menuToggle: {
         position: 'absolute',
@@ -85,17 +88,19 @@ const useStyles = makeStyles(theme => ({
         }
     },
     fireChatHeader: {
-        color: colors.white,
-        fontSize: 18,
+        color: colors.red,
+        fontSize: 24,
         fontWeight: 600,
-        textTransform: 'uppercase'
+        textTransform: 'uppercase',
+        paddingTop: 4,
+        paddingLeft: 4,
+        fontStyle: 'italic'
     },
     menuItem: {
         textTransform: 'uppercase',
         display: 'inline-block',
         paddingBottom: 3,
         textDecoration: 'none',
-        // textShadow: `0 0 3px ${colors.darkGrey}`,
         fontSize: 19,
         fontWeight: 500,
         color: colors.white,
