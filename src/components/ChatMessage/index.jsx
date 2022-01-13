@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, TextField, InputAdornment } from '@material-ui/core';
+import { Typography, TextField, InputAdornment, useMediaQuery, useTheme } from '@material-ui/core';
 import { colors } from '../../assets/colors';
 import { BiCommentDetail } from 'react-icons/bi';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import moment from 'moment';
-import firebase from 'firebase/app';
 
 const ChatMessage = ({ message, comments, auth, sendReply }) => {
     const { text, uid, id, photoURL, createdAt, displayName } = message;
@@ -17,6 +16,8 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
     const [expanded, setExpanded] = useState(false)
     const [replyValue, setReplyValue] = useState('')
     const classes = useStyles()
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
     const handleReplyChange = (e) =>{
         setReplyValue(e.target.value)
@@ -41,14 +42,15 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
             onMouseEnter={()=>setHover(true)}
             onMouseLeave={()=>setHover(false)}
         >
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', width: isMobile ? '100%' : 'initial' }}>
                 <div style={{ 
                         display: 'flex', 
                         flexDirection: isMyText ? 'row-reverse' : 'row', 
                         width: '100%',
-                        alignItems: 'center'
+                        alignItems: 'flex-start'
                     }}
                 >
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     {photoURL && (
                         <img 
                             alt={`${displayName}-profile-pic`}
@@ -56,7 +58,8 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                             src={photoURL} 
                         />
                         )}
-                    <Typography style={{ padding: '0px 8px'}}>{displayName ? displayName : 'Anonymous'}</Typography>
+                    <Typography style={{ padding: '0px 8px', whiteSpace: 'pre' }}>{displayName ? displayName : 'Anonymous'}</Typography>
+                </div>
                     <div className={isMyText ? classes.mineMessage : classes.yourMessage}>
                         {hover && !expanded && (
                             <>
@@ -164,6 +167,9 @@ const useStyles = makeStyles(theme => ({
         },
         '& .MuiInputLabel-shrink': {
             color: 'rgba(0, 0, 0, 0.54)'
+        },
+        [theme.breakpoints.down('sm')]: {
+            flexDirection: 'column !important'
         }
     },
     msgImg: {
