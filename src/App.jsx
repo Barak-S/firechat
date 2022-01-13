@@ -33,19 +33,28 @@ function App() {
   }
 
   const signInAnonymously = () => {
-    const provider = firebase.auth().signInAnonymously();
-    setShowSignIn(false);
-    // add toast after promise
-    setNavOpen(false)
-    auth.signInWithPopup(provider);
+    firebase.auth().signInAnonymously()
+    .then(() => {
+      setShowSignIn(false)
+      setNavOpen(false)
+      Toast.success('Sign In Successful!');
+    })
+    .catch((error) => {
+      Toast.error('An error occured please try again');
+    })
   }
 
   const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     setShowSignIn(false);
-    // add toast after promise
     setNavOpen(false)
-    auth.signInWithPopup(provider);
+    auth.signInWithPopup(provider)
+    .then(()=>{
+      Toast.success('Sign In Successful!')
+    })
+    .catch((error) => {
+      Toast.error('An error occured please try again');
+    })
   }
 
   return (
