@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, TextField, InputAdornment } from '@material-ui/core';
 import { colors } from '../../assets/colors';
@@ -9,6 +9,8 @@ import { HiOutlinePaperAirplane } from 'react-icons/hi';
 
 const ChatMessage = ({ message, comments, auth, sendReply }) => {
     const { text, uid, id, photoURL, createdAt, displayName } = message;
+
+    let isMyText = uid === auth?.currentUser?.uid;
 
     const [hover, setHover] = useState(false)
     const [expanded, setExpanded] = useState(false)
@@ -33,14 +35,14 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
     return (<>
         <div 
             className={classes.message} 
-            style={{ flexDirection: uid && uid === auth?.currentUser?.uid ? 'row-reverse' : 'row', position: 'relative' }}
+            style={{ flexDirection: isMyText ? 'row-reverse' : 'row', position: 'relative' }}
             onMouseEnter={()=>setHover(true)}
             onMouseLeave={()=>setHover(false)}
         >
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ 
                         display: 'flex', 
-                        flexDirection: uid && uid === auth?.currentUser?.uid ? 'row-reverse' : 'row', 
+                        flexDirection: isMyText ? 'row-reverse' : 'row', 
                         width: '100%',
                         alignItems: 'center'
                     }}
@@ -53,18 +55,11 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                         />
                         )}
                     <Typography style={{ padding: '0px 8px'}}>{displayName ? displayName : 'Anonymous'}</Typography>
-                    <div 
-                        className={uid === auth?.currentUser?.uid ? classes.mineMessage : classes.yourMessage}
-                        style={{
-                            borderBottomRightRadius: expanded && uid !== auth?.currentUser?.uid ? 0 : 20,
-                            borderBottomLeftRadius: expanded && uid === auth?.currentUser?.uid ? 0 : 20,
-                            transition: '0.3s ease-in-out'
-                        }}
-                    >
+                    <div className={isMyText ? classes.mineMessage : classes.yourMessage}>
                         {hover && !expanded && (
                             <>
                                 <BiCommentDetail 
-                                    className={uid === auth?.currentUser?.uid ? classes.replyToMe : classes.replyToYou} 
+                                    className={isMyText ? classes.replyToMe : classes.replyToYou} 
                                     color={'#000100'} 
                                     size={18} 
                                     onClick={()=>setExpanded(true)}
@@ -73,7 +68,7 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                         )}
                         {expanded && (
                             <AiFillCloseCircle 
-                                className={uid === auth?.currentUser?.uid ? classes.replyToMe : classes.replyToYou} 
+                                className={isMyText ? classes.replyToMe : classes.replyToYou} 
                                 color={'#000100'} 
                                 size={20} 
                                 onClick={()=>setExpanded(false)}
@@ -82,8 +77,8 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                         {text}
                         {!!comments.length && (
                             <Typography 
-                                onClick={()=>setExpanded(true)} 
-                                className={uid === auth?.currentUser?.uid ? classes.replyHeaderMe : classes.replyHeaderYou}
+                                onClick={()=>setExpanded(!expanded)} 
+                                className={isMyText ? classes.replyHeaderMe : classes.replyHeaderYou}
                             >
                                 {`${comments.length} Comments`}
                             </Typography>
@@ -91,22 +86,25 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                     </div>
                 </div>
                 <div 
-                    className={uid === auth?.currentUser?.uid ? classes.myThreadWrapper : classes.yourThreadWrapper} 
+                    className={isMyText ? classes.myThreadWrapper : classes.yourThreadWrapper} 
                     style={{ 
                         zIndex: expanded ? 2 : -1, 
                         opacity: expanded ? 1 : 0, 
                         marginTop: expanded ? '0%' : '-19%',
-                        display: 'flex',
+                        display: expanded ? 'flex' : 'none',
+                        position: expanded ? 'relative' : 'absolute',
                         transition: '0.3s ease-in-out',
                         width: '100%',
                         flexDirection: 'column',
+                        borderRadius: 8,
+                        marginTop: 6,
                     }}
                 >
                     {comments && (
                         <div style={{ paddingLeft: 6, borderLeft: '1px solid black', marginBottom: 6}}>
                             {comments.map((com)=>{
                                 return (
-                                    <Typography style={{ fontSize: 12}}><strong>{!!com.displayName ? com.displayName : 'Anonymous'}</strong>{'  '}{com.text}</Typography>
+                                    <Typography key={com.id} style={{ fontSize: 12}}><strong>{!!com.displayName ? com.displayName : 'Anonymous'}</strong>{'  '}{com.text}</Typography>
                                 )
                             })}
                         </div>
@@ -119,13 +117,13 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                         type="text"
                         autoComplete="off"
                         name="reply"
-                        className={uid === auth?.currentUser?.uid ? classes.myReplyInput : classes.yourReplyInput}
+                        className={isMyText ? classes.myReplyInput : classes.yourReplyInput}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <HiOutlinePaperAirplane
                                         size={20} 
-                                        color={!replyValue.length ? 'rgba(0, 0, 0, 0.54)': uid === auth?.currentUser?.uid ? colors.black : colors.green} 
+                                        color={!replyValue.length ? 'rgba(0, 0, 0, 0.54)': isMyText ? colors.black : colors.green} 
                                         className={classes.sendReplyBtn}
                                         style={{ cursor: replyValue.length ? 'pointer' : 'auto' }}
                                         onClick={()=>replyValue.length && handleSendReply(id, replyValue)}

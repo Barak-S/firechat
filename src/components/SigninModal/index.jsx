@@ -78,7 +78,7 @@ const SigninModal = ({
                 onClick={signInAnonymously}
                 startIcon={<FaUserSecret color={colors.white} size={30} />}
             >
-                {'Sign in Anonymously 🤫'}
+                {'Sign in Anonymously'}
             </Button>
         </div>
     </Dialog>
