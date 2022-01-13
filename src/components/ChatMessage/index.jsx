@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, TextField, InputAdornment } from '@material-ui/core';
 import { colors } from '../../assets/colors';
-import { FaUserSecret } from 'react-icons/fa';
 import { BiCommentDetail } from 'react-icons/bi';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
+import moment from 'moment';
+import firebase from 'firebase/app';
 
 const ChatMessage = ({ message, comments, auth, sendReply }) => {
     const { text, uid, id, photoURL, createdAt, displayName } = message;
@@ -26,10 +27,11 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
         setReplyValue('')
     }
 
-    const toDateTime = (secs) => {
-        var t = new Date(1970, 0, 1);
-        t.setSeconds(secs);
-        return t.toDateString() + " " + t.toLocaleTimeString()
+    const toDateTime = (timestamp) => {
+        if (timestamp?.seconds){
+            let t = new Date(timestamp.seconds*1000)
+            return moment(t).local().startOf('minute').fromNow()
+        }
     }
 
     return (<>
@@ -145,7 +147,7 @@ const ChatMessage = ({ message, comments, auth, sendReply }) => {
                     padding: '0px 10px',
                 }}
             >
-                {`${toDateTime(createdAt?.seconds)}`}
+                {toDateTime(createdAt)}
             </p>
         </div>
     </>)

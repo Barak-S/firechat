@@ -27,13 +27,13 @@ const ChatRoom = ({
 
     useEffect(()=>{
         if (scrollRef?.current && messages){
-            if(!messages[messages.length -1].replyId){
+            if(!messages[messages.length -1]?.replyId){
                 scrollRef.current.scrollIntoView({ behavior: 'smooth' });
             }
         }
     }, [scrollRef, messages])
 
-    
+
 
     useEffect(()=>{
         if(!user){
@@ -88,7 +88,7 @@ const ChatRoom = ({
             <div className={classes.chatContainer}>
                 <div className={classes.messageContainer}>
                     {messages && messages.map(msg => {
-                        if (!msg.replyId){
+                        if (!msg?.replyId){
                             return(
                                 <ChatMessage 
                                     auth={auth} 
